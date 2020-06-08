@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+    webapi:       
+        environment:
+           - ConnectionString=Server=db;Database=employeedb;User=sa;Password=Your_password123      
+            
+    db:        
+        ports:
+           - 5433:1433
+        environment:
+            SA_PASSWORD: "Your_password123"            
+  

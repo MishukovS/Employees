@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Employees.Core.Interfaces.DatаAccess;
-using Employees.Core.Interfaces.Infrastracture;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -17,10 +17,10 @@ namespace Employees.DataAccess.Dapper.Infrastracture
         private readonly string _connectionString;
         private readonly ILogger _logger;
 
-        public SqlDbExecutor(ISettings settings, ILogger<SqlDbExecutor> logger)
+        public SqlDbExecutor(IConfiguration configuration, ILogger<SqlDbExecutor> logger)
         {
-            _connectionString = settings.GetConnectionString();
-            _logger = logger;
+            _logger = logger;          
+            _connectionString = configuration["ConnectionString"];           
         }
 
         public async Task<IReadOnlyList<T>> QueryAsync<T>(string sql, object queryParams = null)

@@ -1,7 +1,6 @@
-﻿using Employees.Core.Infrastrature;
-using Employees.Core.Interfaces.Infrastracture;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 using System.Reflection;
 
 namespace Employees.DataAcсess.EF
@@ -12,19 +11,17 @@ namespace Employees.DataAcсess.EF
     /// </summary>
     public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
     {
-        private readonly ISettings _settings;
-
-        public ApplicationDbContextFactory()
+        private readonly string _connectionString;
+        public ApplicationDbContextFactory(IConfiguration configuration)
         {
-            _settings = new Settings();
+            _connectionString = configuration["ConnectionString"];
         }
 
         public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            var connectionString = _settings.GetConnectionString();
+        {        
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             builder.UseSqlServer(
-                        connectionString,
+                        _connectionString,
                         optionsBuilder => optionsBuilder.MigrationsAssembly(typeof(ApplicationDbContext).GetTypeInfo().Assembly.GetName().Name));
 
             return new ApplicationDbContext(builder.Options);

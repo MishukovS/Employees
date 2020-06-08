@@ -1,12 +1,10 @@
 ﻿using Employees.Api.Infrastracture;
 using Employees.Core.Business.Employees;
 using Employees.Core.Business.Salary;
-using Employees.Core.Infrastrature;
 using Employees.Core.Interfaces.Business.Employees;
 using Employees.Core.Interfaces.Business.Empoyees;
 using Employees.Core.Interfaces.Business.Salary;
 using Employees.Core.Interfaces.DatаAccess;
-using Employees.Core.Interfaces.Infrastracture;
 using Employees.DataAccess.Dapper.Infrastracture;
 using Employees.DataAccess.Dapper.SalaryDao;
 using Employees.DataAcсess.EF;
@@ -70,15 +68,13 @@ namespace Employees.Api
 
         public void ConfigureDataAccessServices(IServiceCollection services)
         {
-            // EF           
-            services.AddSingleton(typeof(ISettings), typeof(Settings));
+            // EF    
 
-            var sp = services.BuildServiceProvider();
-            var settings = sp.GetService<ISettings>();
+            var sp = services.BuildServiceProvider();          
 
             services.AddDbContext<ApplicationDbContext>(c =>
               c.UseSqlServer(
-                  settings.GetConnectionString(),
+                  Configuration["ConnectionString"],
                   providerOptions => providerOptions.CommandTimeout(10))
                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 
