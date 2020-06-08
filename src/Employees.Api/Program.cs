@@ -1,6 +1,7 @@
 ﻿using Employees.DataAcсess.EF;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
@@ -18,12 +19,14 @@ namespace Employees.Api
                 var loggerFactory = services.GetRequiredService<ILoggerFactory>();
                 var dbContext = services.GetRequiredService<ApplicationDbContext>();
 
-                bool isConnect = await dbContext.Database.CanConnectAsync();
-
-                if (!isConnect)
+                try
+                {
+                    await dbContext.Database.MigrateAsync();
+                }
+                catch (System.Exception ex)
                 {
                     var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError("An error connection to DB.");
+                    logger.LogCritical(ex, "Error migrate DB.");
                     return;
                 }
             }
