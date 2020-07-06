@@ -1,9 +1,10 @@
 ﻿using Employees.Core.Business.Employees;
-using Employees.Core.Interfaces.DatаAccess;
 using Employees.Core.DomainModels;
+using Employees.Core.Interfaces.Business.Empoyees;
+using Employees.Core.Interfaces.DatаAccess;
 using Moq;
 using NUnit.Framework;
-using Employees.Core.Interfaces.Business.Empoyees;
+using System.Threading.Tasks;
 
 namespace Employees.UnitTests.Business.Employees
 {
@@ -20,16 +21,19 @@ namespace Employees.UnitTests.Business.Employees
         }
 
         [Test]
-        public void DeleteAsync_ShouldInvokeEmployeeReaderAndRepository()
+        public async Task DeleteAsync_WhenDeleteEmployee_ThenShouldInvokeEmployeeReaderAndRepository()
         {
+            // Arrange
             var remover = new EmployeeRemover(_mockRepo.Object, _mockReader.Object);
-            remover.DeleteAsync(It.IsAny<int>()).Wait();
 
+            // Act
+            await remover.DeleteAsync(It.IsAny<int>());
+
+            // Assert
             _mockReader.Verify(x => x.GetByIdAsync(It.IsAny<int>()), Times.Once);
             _mockRepo.Verify(x => x.DeleteAsync(It.IsAny<Employee>()), Times.Once);
 
         }
-
 
     }
 }

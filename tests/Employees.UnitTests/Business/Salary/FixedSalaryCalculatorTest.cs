@@ -13,28 +13,36 @@ namespace Employees.UnitTests.Business.Salary
         private readonly Fixture _fixture = new Fixture();
 
         [Test]
-        public void Calculate_IncludeTax_SalarySumShouldBeEqualRate()
+        public void Calculate_WhenIncludeTax_ThenSalarySumShouldBeEqualRate()
         {
+            // Arrange
             var model = new SalaryModel
             {
                 IncludeTax = true,
                 Rate = _fixture.Create<decimal>()
             };
+
+            // Act
             var salarySum = _calculator.Calculate(model);
 
+            // Assert
             salarySum.Should().Be(model.Rate);
         }
 
         [Test]
-        public void Calculate_NotIncludeTax_SalarySumShouldBeGreaterRate()
+        public void Calculate_WhenNotIncludeTax_ThenSalarySumShouldBeGreaterRate()
         {
+            // Arrange
             var model = new SalaryModel
             {
                 IncludeTax = false,
                 Rate = _fixture.Create<decimal>()
             };
+
+            // Act
             var salarySum = _calculator.Calculate(model);
 
+            // Assert
             salarySum.Should().BeGreaterThan(model.Rate);
         }
     }

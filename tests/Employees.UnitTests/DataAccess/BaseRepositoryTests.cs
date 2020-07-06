@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Employees.UnitTests.DataAccess
 {
@@ -28,62 +29,70 @@ namespace Employees.UnitTests.DataAccess
         }
 
         [Test]
-        public void AddAsync_AddOneEmployee_TotalCountShouldBeOne()
+        public async Task AddAsync_WhenAddOneEmployee_ThenTotalCountShouldBeOne()
         {
+            // Arrange
             var employee = _fixture.Create<Employee>();
-
             var spec = new EmployeeSpecification();
-            var result = _repository.GetBySpecificationAsync(spec).Result;
-            result.Should().HaveCount(0);
 
-            _repository.AddAsync(employee).Wait();
-            result = _repository.GetBySpecificationAsync(spec).Result;
+            // Act
+            await _repository.AddAsync(employee);
+            var result = await _repository.GetBySpecificationAsync(spec);
 
-
+            // Assert
             result.Should().HaveCount(1);
         }
 
         [Test]
-        public void AddAsync_AddOneEmployee_GottenEmployeEqualAdded()
+        public async Task AddAsync_WhenAddOneEmployee_ThenGottenEmployeEqualAdded()
         {
+            // Arrange
             var employee = _fixture.Create<Employee>();
             var spec = new EmployeeSpecification();
 
-            _repository.AddAsync(employee).Wait();
-            var result = _repository.GetBySpecificationAsync(spec).Result;
+            // Act
+            await _repository.AddAsync(employee);
+            var result = await _repository.GetBySpecificationAsync(spec);
 
-
+            // Assert
             result.First().Should().BeEquivalentTo(employee, options =>
                      options.Excluding(o => o.Id));
         }
 
         [Test]
-        public void DeleteAsync_AddandDeleteEmployee_TotalCountShouldBeZero()
+        public async Task DeleteAsync_WhenAddandDeleteEmployee_ThenTotalCountShouldBeZero()
         {
+            // Arrange
             var employee = _fixture.Create<Employee>();
-            _repository.AddAsync(employee).Wait();
-
             var spec = new EmployeeSpecification();
-            var result = _repository.GetBySpecificationAsync(spec).Result;
-            result.Should().HaveCount(1);
 
-            _repository.DeleteAsync(result.First()).Wait();
-            result = _repository.GetBySpecificationAsync(spec).Result;
+            // Act
+            await _repository.AddAsync(employee);
 
+            var result = await _repository.GetBySpecificationAsync(spec);    
+
+            await _repository.DeleteAsync(result.First());
+            result = await _repository.GetBySpecificationAsync(spec);
+
+            // Assert
             result.Should().HaveCount(0);
         }
 
         [Test]
-        public void UpdateAsync_UpdateSalarySum_SalarySumIsUpdated()
+        public async Task UpdateAsync_WhenUpdateSalarySum_ThenSalarySumIsUpdated()
         {
-            var employee = _fixture.Create<Employee>();
-            _repository.AddAsync(employee).Wait();
-
-            employee.SalarySum = 50000;
-            _repository.UpdateAsync(employee).Wait();
-
+            // Arrange
             var spec = new EmployeeSpecification();
-            var result = _repository.GetBySpecificationAsync(spec).Result;
+            var employee = _fixture.Create<Employee>();
+            await _repository.AddAsync(employee);
+
+            // Act
+            employee.SalarySum = 50000;
+            await _repository.UpdateAsync(employee);
+            
+            var result = await _repository.GetBySpecificationAsync(spec);
+
+            // Assert
             result.First().Should().BeEquivalentTo(employee, options =>
                      options.Excluding(o => o.Id));
 
